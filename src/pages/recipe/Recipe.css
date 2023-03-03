@@ -28,6 +28,7 @@
   .method {
     text-align: left;
     line-height: 1.5em;
+    margin-top: 50px;
   }
 
   .recipe.dark {

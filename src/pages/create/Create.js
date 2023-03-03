@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import uuid from 'react-uuid';
-import { useFetch } from '../../hooks/useFetch';
+import { projectFirestore } from "../../firebase/config";
 //stylers
 import "./Create.css";
 
@@ -16,11 +15,17 @@ const [ingredients, setIngredients] = useState([]);
 const ingredientInput = useRef(null);
 const navigate = useNavigate();
 
-const {postData, data, error} = useFetch('http://localhost:3000/recipes', "POST")
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
   //Use event object as a parameter to prevent default of the form submitting when the page is reloading
   e.preventDefault();
-  postData({title, ingredients, method, cookingTime: cookingTime + ' minutes'})
+  const doc = {title, ingredients, method, cookingTime: cookingTime + ' minutes'}
+  try{ 
+    await projectFirestore.collection('recipes').add(doc)
+    //tuned into await so we can redirect the user to the home page after it is finished
+    navigate('/');
+  } catch (err) {
+    console.log(err)
+  }
 }
 const handleAdd = (e) => {
   e.preventDefault();
@@ -35,16 +40,8 @@ const handleAdd = (e) => {
   ingredientInput.current.focus();
 }
 
-//redirect user after we get data response
-useEffect(() => {
-  if(data) {
-    navigate("/");
-  }
-}, [data, navigate])
-
   return (
     <div className='create'>
-    {error && <p>{error}</p>}
       <h2 className='page-title'> Add a New Recipe</h2>
       <form onSubmit={handleSubmit}>
       <label>
@@ -68,7 +65,7 @@ useEffect(() => {
             <button onClick = {handleAdd}className='btn'>add</button>
           </div>
         </label>
-        <p>Current ingredients: {ingredients.map(i=> <em key = {uuid()}>{i}</em>)}</p>
+        <p>Current ingredients: {ingredients.map(i=> <em key = {i}>{i} </em>)}</p>
 
         <label>
           <span>Cooking Instructions</span>

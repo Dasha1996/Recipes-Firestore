@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useFetch } from '../../hooks/useFetch';
 import uuid from 'react-uuid';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from '../../hooks/useTheme';
+import { projectFirestore } from "../../firebase/config";
 //styles
 import './Recipe.css';
 
@@ -11,10 +11,29 @@ import './Recipe.css';
 export default function Recipe () {
     //to dynamically render content of each recipe based on url
     const { id } = useParams();
-    const url = "http://localhost:3000/recipes/" + id;
-    //custom useEffect hook to fetch data
-    const {data: recipe, isPending, error } = useFetch(url);
     const { mode } = useTheme();
+
+    const [data, setData] = useState(null);
+    const [isPending, setIsPending] = useState(false);
+    const [error, setError] = useState(false);
+
+    useEffect(()=> {
+        setIsPending(true);
+        
+        const unsub = projectFirestore.collection('recipes').doc(id).onSnapshot((doc) => {
+            if(doc.exists) {
+               setIsPending(false)
+               setData(doc.data())
+            } else {
+                setIsPending(false)
+                setError('Could not find that recipe')
+            }
+        })
+        return () => unsub();
+
+    }, [id])
+  
+
     const navigate = useNavigate();
     //hook to redirect the user if they accidentallyt access the recipe id that doesn't exist
     useEffect(()=> {
@@ -31,15 +50,15 @@ export default function Recipe () {
     <div className = {`recipe ${mode}`}>
         {isPending && <p>Loading data...</p>}
         {error && <p>{error}</p>}
-        {recipe && (
+        {data && (
            
             <div className='single-recipe'>
-                <h2 className='page-title'>{recipe.title}</h2>
-                <p> Takes {recipe.cookingTime} to cook</p>
+                <h2 className='page-title'>{data.title}</h2>
+                <p> Takes {data.cookingTime} to cook</p>
                 <ul>
-                    {recipe.ingredients.map(ingredient => <li key ={uuid()}>{ingredient}</li>)}
+                {data.ingredients.map((ingredient) => <li key ={uuid()}>{ingredient}</li>)}
                 </ul>
-                <p className='method'>{recipe.method}</p>
+                <p className='method'>{data.method}</p>
             </div>
         ) }
 
