@@ -43,37 +43,9 @@
         "mushrooms",
         "leeks, tofu, carrots"
       ],
-      "method": "rrrrr",
-      "cookingTime": "45 minutes",
-      "id": "KaOkoKm"
-    },
-    {
-      "title": "veg pie",
-      "ingredients": [
-        "mushrooms",
-        "leeks, tofu, carrots"
-      ],
-      "method": "rrrrr",
+      "method": "test",
       "cookingTime": "45 minutes",
       "id": "m64mEP-"
-    },
-    {
-      "title": "test",
-      "ingredients": [
-        "test"
-      ],
-      "method": "test",
-      "cookingTime": "40 minutes",
-      "id": "maXGigr"
-    },
-    {
-      "title": "test",
-      "ingredients": [
-        "t"
-      ],
-      "method": "t",
-      "cookingTime": "40 minutes",
-      "id": "ZxMxV_q"
     }
   ]
 }

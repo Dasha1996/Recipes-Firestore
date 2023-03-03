@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
 import uuid from 'react-uuid';
 import { useEffect } from "react";
+import { useTheme } from '../../hooks/useTheme';
 //styles
 import './Recipe.css';
+
 
 export default function Recipe () {
     //to dynamically render content of each recipe based on url
@@ -12,6 +14,7 @@ export default function Recipe () {
     const url = "http://localhost:3000/recipes/" + id;
     //custom useEffect hook to fetch data
     const {data: recipe, isPending, error } = useFetch(url);
+    const { mode } = useTheme();
     const navigate = useNavigate();
     //hook to redirect the user if they accidentallyt access the recipe id that doesn't exist
     useEffect(()=> {
@@ -25,13 +28,12 @@ export default function Recipe () {
     }, [error, navigate])
 
   return (
-    <div className = 'recipe'>
+    <div className = {`recipe ${mode}`}>
         {isPending && <p>Loading data...</p>}
         {error && <p>{error}</p>}
         {recipe && (
            
             <div className='single-recipe'>
-            <img src="https://via.placeholder.com/520x460" alt = "placeholder"></img>
                 <h2 className='page-title'>{recipe.title}</h2>
                 <p> Takes {recipe.cookingTime} to cook</p>
                 <ul>
